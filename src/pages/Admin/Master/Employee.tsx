@@ -11,15 +11,20 @@ import IconEdit from '../../../components/Icon/IconEdit';
 // import IconEye from '../../../components/Icon/IconEye';
 import { engineersData } from '../../../data';
 import IconCopy from '../../../components/Icon/IconCopy';
+import IconEye from '../../../components/Icon/IconEye';
 
-const Engineers = () => {
+const Employee = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Engineers'));
     }, []);
 
-    const [items, setItems] = useState(engineersData);
-
+    const [items, setItems] = useState(
+        engineersData.map((item, index) => ({
+            ...item,
+            employeeId: `EMP${String(index + 1).padStart(3, '0')}`, // Generates C001, C002, etc.
+        }))
+    );
     const deleteRow = (id: any = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
             if (id) {
@@ -57,8 +62,6 @@ const Engineers = () => {
         direction: 'asc',
     });
 
-
-
     useEffect(() => {
         setPage(1);
         /* eslint-disable react-hooks/exhaustive-deps */
@@ -74,6 +77,7 @@ const Engineers = () => {
         setInitialRecords(() => {
             return items.filter((item) => {
                 return (
+                    item.employeeId.toLowerCase().includes(search.toLowerCase()) ||
                     item.name.toLowerCase().includes(search.toLowerCase()) ||
                     item.email.toLowerCase().includes(search.toLowerCase()) ||
                     item.phone.toLowerCase().includes(search.toLowerCase()) ||
@@ -94,16 +98,16 @@ const Engineers = () => {
 
     return (
         <>
-            <ul className="flex space-x-2 rtl:space-x-reverse">
+            <ol className="flex text-gray-500 font-semibold dark:text-white-dark pb-4">
                 <li>
-                    <Link to="/" className="text-primary hover:underline">
+                    <Link to="/" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
                         Dashboard
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Engineers</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <button className="text-primary">Engineers</button>
                 </li>
-            </ul>
+            </ol>
             <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
                 <div className="invoice-table">
                     <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
@@ -116,7 +120,6 @@ const Engineers = () => {
                                 <IconPlus />
                                 Add New
                             </Link>
-                           
                         </div>
                         <div className="ltr:ml-auto rtl:mr-auto">
                             <input type="text" className="form-input w-auto" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -128,6 +131,11 @@ const Engineers = () => {
                             className="whitespace-nowrap table-hover invoice-table"
                             records={records}
                             columns={[
+                                {
+                                    accessor: 'employeeId', // New Client ID column
+                                    title: 'EMP ID',
+                                    sortable: true,
+                                },
                                 {
                                     accessor: 'name',
                                     sortable: true,
@@ -166,12 +174,12 @@ const Engineers = () => {
                                     textAlignment: 'center',
                                     render: ({ id }) => (
                                         <div className="flex gap-4 items-center w-max mx-auto">
+                                            <NavLink to="/apps/invoice/preview" className="flex hover:text-primary">
+                                                <IconEye />
+                                            </NavLink>
                                             <NavLink to="/admin/engineers/edit" className="flex hover:text-info">
                                                 <IconEdit className="w-4.5 h-4.5" />
                                             </NavLink>
-                                            {/* <NavLink to="/apps/invoice/preview" className="flex hover:text-primary">
-                                                <IconEye />
-                                            </NavLink> */}
                                             <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
                                                 <IconTrashLines />
                                             </button>
@@ -199,4 +207,4 @@ const Engineers = () => {
     );
 };
 
-export default Engineers;
+export default Employee;

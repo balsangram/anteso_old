@@ -6,7 +6,7 @@ import State from '../pages/Admin/Master/State';
 import City from '../pages/Admin/Master/City';
 import Item from '../pages/Admin/Master/Item';
 import Clients from '../pages/Admin/Master/Clients';
-import Engineers from '../pages/Admin/Master/Engineers';
+import Engineers from '../pages/Admin/Master/Employee';
 import Tools from '../pages/Admin/Master/Tools';
 import DealersAndManufacturers from '../pages/Admin/Master/DealersAndManufacturers';
 import Services from '../pages/Admin/Master/Services';
@@ -17,6 +17,7 @@ import AddCity from '../components/Admin/Master/City/Add';
 import EditCity from '../components/Admin/Master/City/Edit';
 import AddItem from '../components/Admin/Master/Items/Add';
 import EditItem from '../components/Admin/Master/Items/Edit';
+import ViewClient from '../components/Admin/Master/Clients/View';
 import AddClient from '../components/Admin/Master/Clients/Add';
 import EditClient from '../components/Admin/Master/Clients/Edit';
 import AddEngineer from '../components/Admin/Master/Engineers/Add';
@@ -32,6 +33,10 @@ import EditCourierCompanie from '../components/Admin/Master/CourierCompanies/Edi
 import Enquiry from '../pages/Admin/Enquiry';
 import AddEnquiry from '../components/Admin/Enquiry/Add';
 import EditEnquiry from '../components/Admin/Enquiry/Edit';
+import EnquriryForm from '../pages/form_link/EnquriryForm';
+// import Quotation from '../pages/quotation/Quotation';
+import AddQuotation from '../components/Admin/Quotation/Add';
+import ViesQuotation from '../components/Admin/Quotation/View';
 const ContactUsBoxed = lazy(() => import('../pages/Pages/ContactUsBoxed'));
 const ContactUsCover = lazy(() => import('../pages/Pages/ContactUsCover'));
 const ComingSoonBoxed = lazy(() => import('../pages/Pages/ComingSoonBoxed'));
@@ -44,6 +49,8 @@ const About = lazy(() => import('../pages/About'));
 const Error = lazy(() => import('../components/Error'));
 
 const routes = [
+    { path: '/enquiry_form', element: <EnquriryForm /> },
+    // { path: '/quotation', element: <Quotation /> },
     // dashboard
     {
         path: '/',
@@ -130,6 +137,14 @@ const routes = [
         element: (
             <AdminProtected>
                 <Clients />
+            </AdminProtected>
+        ),
+    },
+    {
+        path: '/admin/clients/preview',
+        element: (
+            <AdminProtected>
+                <ViewClient />
             </AdminProtected>
         ),
     },
@@ -293,6 +308,23 @@ const routes = [
             </AdminProtected>
         ),
     },
+    {
+        path: '/admin/quotation/view',
+        element: (
+            <AdminProtected>
+                <ViesQuotation />
+            </AdminProtected>
+        ),
+    },
+    {
+        path: '/admin/quotation/add',
+        element: (
+            <AdminProtected>
+                <AddQuotation />
+            </AdminProtected>
+        ),
+    },
+
     // pages
     {
         path: '/pages/contact-us-boxed',

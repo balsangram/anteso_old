@@ -13,7 +13,8 @@ const EditEngineer = () => {
             .required('Please fill the Field'),
         empId: Yup.string().required('Please fill the Field'),
         role: Yup.string().required('Please fill the Field'),
-        tools: Yup.string().required('Please fill the Field'),
+        tools: Yup.array().of(Yup.string()).min(1, 'Please select at least one tool').required('Please select at least one tool'),
+
         status: Yup.string().required('Please fill the Field'),
     });
     const submitForm = () => {
@@ -21,21 +22,23 @@ const EditEngineer = () => {
     };
     return (
         <>
-            <ul className="flex space-x-2 rtl:space-x-reverse">
+            <ol className="flex text-gray-500 font-semibold dark:text-white-dark mb-4">
                 <li>
-                    <Link to="/" className="text-primary hover:underline">
+                    <Link to="/" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
                         Dashboard
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <Link to="/admin/engineers" className="text-primary hover:underline">
-                        <span>Engineers</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <Link to="/admin/engineers" className="text-primary">
+                        Employee
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Edit</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <Link to="#" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
+                        Edit Employee
+                    </Link>
                 </li>
-            </ul>
+            </ol>
             <Formik
                 initialValues={{
                     name: engineersData[0].name,
@@ -51,82 +54,88 @@ const EditEngineer = () => {
             >
                 {({ errors, submitCount, touched }) => (
                     <Form className="space-y-5">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <div className={submitCount ? (errors.status ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="status">Status</label>
-                                <Field as="select" name="status" className="form-select">
-                                    <option value="" disabled>
-                                        Open this select menu
-                                    </option>
-                                    <option value="Active">Active</option>
-                                    <option value="Deactive">Deactive</option>
-                                </Field>
-                                {submitCount ? (
-                                    errors.status ? (
-                                        <div className=" text-danger mt-1">{errors.status}</div>
+                        <div className="panel">
+                            <h5 className="font-semibold text-lg mb-4">Employee Details</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div className={submitCount ? (errors.status ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="status">Status</label>
+                                    <Field as="select" name="status" className="form-select">
+                                        <option value="" disabled>
+                                            Open this select menu
+                                        </option>
+                                        <option value="Active">Active</option>
+                                        <option value="Deactive">Deactive</option>
+                                    </Field>
+                                    {submitCount ? (
+                                        errors.status ? (
+                                            <div className=" text-danger mt-1">{errors.status}</div>
+                                        ) : (
+                                            <div className=" text-[#1abc9c] mt-1">Example valid custom select feedback</div>
+                                        )
                                     ) : (
-                                        <div className=" text-[#1abc9c] mt-1">Example valid custom select feedback</div>
-                                    )
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                            <div className={submitCount ? (errors.name ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="name">Name </label>
-                                <Field name="name" type="text" id="name" placeholder="Enter Name" className="form-input" />
-                                {submitCount ? errors.name ? <div className="text-danger mt-1">{errors.name}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.email ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="email">Email </label>
-                                <Field name="email" type="text" id="email" placeholder="Enter Email Address" className="form-input" />
-                                {submitCount ? errors.email ? <div className="text-danger mt-1">{errors.email}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.phone ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="phone">Phone </label>
-                                <Field name="phone" type="number" id="phone" placeholder="Enter Phone Number" className="form-input" />
-                                {submitCount ? errors.phone ? <div className="text-danger mt-1">{errors.phone}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.empId ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="empId">Employee ID </label>
-                                <Field name="empId" type="text" id="empId" placeholder="Enter Emp ID" className="form-input" />
-                                {submitCount ? errors.empId ? <div className="text-danger mt-1">{errors.empId}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.role ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="role">Role</label>
-                                <Field as="select" name="role" className="form-select">
-                                    <option value="" disabled>
-                                        Open this select menu
-                                    </option>
-                                    <option value="Office Staff">Office Staff</option>
-                                    <option value="Engineer">Engineer</option>
-                                </Field>
-                                {submitCount ? (
-                                    errors.role ? (
-                                        <div className=" text-danger mt-1">{errors.role}</div>
+                                        ''
+                                    )}
+                                </div>
+                                <div className={submitCount ? (errors.name ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="name">Name </label>
+                                    <Field name="name" type="text" id="name" placeholder="Enter Name" className="form-input" />
+                                    {submitCount ? errors.name ? <div className="text-danger mt-1">{errors.name}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.email ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="email">Email </label>
+                                    <Field name="email" type="text" id="email" placeholder="Enter Email Address" className="form-input" />
+                                    {submitCount ? errors.email ? <div className="text-danger mt-1">{errors.email}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.phone ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="phone">Phone </label>
+                                    <Field name="phone" type="number" id="phone" placeholder="Enter Phone Number" className="form-input" />
+                                    {submitCount ? errors.phone ? <div className="text-danger mt-1">{errors.phone}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.empId ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="empId">Employee ID </label>
+                                    <Field name="empId" type="text" id="empId" placeholder="Enter Emp ID" className="form-input" />
+                                    {submitCount ? errors.empId ? <div className="text-danger mt-1">{errors.empId}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.role ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="role">Role</label>
+                                    <Field as="select" name="role" className="form-select">
+                                        <option value="" disabled>
+                                            Open this select menu
+                                        </option>
+                                        <option value="Office Staff">Office Staff</option>
+                                        <option value="Engineer">Engineer</option>
+                                    </Field>
+                                    {submitCount ? (
+                                        errors.role ? (
+                                            <div className=" text-danger mt-1">{errors.role}</div>
+                                        ) : (
+                                            <div className=" text-[#1abc9c] mt-1">Example valid custom select feedback</div>
+                                        )
                                     ) : (
-                                        <div className=" text-[#1abc9c] mt-1">Example valid custom select feedback</div>
-                                    )
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                            <div className={submitCount ? (errors.tools ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="tools">Tools </label>
-                                <Field name="tools" type="text" id="tools" placeholder="Enter Tools" className="form-input" />
-                                {submitCount ? errors.tools ? <div className="text-danger mt-1">{errors.tools}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                        ''
+                                    )}
+                                </div>
+                                <div className={submitCount ? (errors.tools ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="tools">Tools </label>
+                                    <Field name="tools" type="text" id="tools" placeholder="Enter Tools" className="form-input" />
+                                    {submitCount ? errors.tools ? <div className="text-danger mt-1">{errors.tools}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
                             </div>
                         </div>
-                        <button
-                            type="submit"
-                            className="btn btn-primary !mt-6"
-                            onClick={() => {
-                                if (touched.name && !errors.name) {
-                                    submitForm();
-                                }
-                            }}
-                        >
-                            Submit Form
-                        </button>
+
+                        <div className="w-full mb-6 flex justify-end">
+                            <button
+                                type="submit"
+                                className="btn btn-success !mt-6"
+                                onClick={() => {
+                                    if (touched.name && !errors.name) {
+                                        submitForm();
+                                    }
+                                }}
+                            >
+                                Submit Form
+                            </button>
+                        </div>
                     </Form>
                 )}
             </Formik>

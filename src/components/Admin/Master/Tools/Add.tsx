@@ -18,21 +18,23 @@ const AddTool = () => {
     };
     return (
         <>
-            <ul className="flex space-x-2 rtl:space-x-reverse">
+            <ol className="flex text-gray-500 font-semibold dark:text-white-dark mb-4">
                 <li>
-                    <Link to="/" className="text-primary hover:underline">
+                    <Link to="/" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
                         Dashboard
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <Link to="/admin/tools" className="text-primary hover:underline">
-                        <span>Tools</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <Link to="/admin/tools" className="text-primary">
+                        Tools
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>Add</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <Link to="#" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
+                        Add Tools
+                    </Link>
                 </li>
-            </ul>
+            </ol>
             <Formik
                 initialValues={{
                     name: '',
@@ -49,75 +51,88 @@ const AddTool = () => {
             >
                 {({ errors, submitCount, touched }) => (
                     <Form className="space-y-5">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <div className={submitCount ? (errors.name ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="name">Name </label>
-                                <Field name="name" type="text" id="name" placeholder="Enter State Name" className="form-input" />
-                                {submitCount ? errors.name ? <div className="text-danger mt-1">{errors.name}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.manufactureDate ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="manufactureDate">Manufacture Date </label>
-                                <Field name="manufactureDate" type="date" id="manufactureDate" placeholder="Enter State Name" className="form-input" />
-                                {submitCount ? errors.manufactureDate ? <div className="text-danger mt-1">{errors.manufactureDate}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.model ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="model">Model </label>
-                                <Field name="model" type="text" id="model" placeholder="Enter State Name" className="form-input" />
-                                {submitCount ? errors.model ? <div className="text-danger mt-1">{errors.model}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.srNo ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="srNo">Sr No </label>
-                                <Field name="srNo" type="text" id="srNo" placeholder="Enter State Name" className="form-input" />
-                                {submitCount ? errors.srNo ? <div className="text-danger mt-1">{errors.srNo}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.calibrationCertificateNo ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="calibrationCertificateNo">Calibration Certificate Number</label>
-                                <Field name="calibrationCertificateNo" type="text" id="calibrationCertificateNo" placeholder="Enter State Name" className="form-input" />
-                                {submitCount ? (
-                                    errors.calibrationCertificateNo ? (
-                                        <div className="text-danger mt-1">{errors.calibrationCertificateNo}</div>
+                        <div className="panel">
+                            <h5 className="font-semibold text-lg mb-4">Tools Details</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div className={submitCount ? (errors.name ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="name">Name </label>
+                                    <Field name="name" type="text" id="name" placeholder="Enter State Name" className="form-input" />
+                                    {submitCount ? errors.name ? <div className="text-danger mt-1">{errors.name}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.manufactureDate ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="manufactureDate">Manufacture Date </label>
+                                    <Field name="manufactureDate" type="date" id="manufactureDate" placeholder="Enter State Name" className="form-input" />
+                                    {submitCount ? (
+                                        errors.manufactureDate ? (
+                                            <div className="text-danger mt-1">{errors.manufactureDate}</div>
+                                        ) : (
+                                            <div className="text-success mt-1">Looks Good!</div>
+                                        )
                                     ) : (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    )
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                            <div className={submitCount ? (errors.calibrationValidTill ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="calibrationValidTill">Calibration Valid Till</label>
-                                <Field name="calibrationValidTill" type="date" id="calibrationValidTill" className="form-input" />
-                                {submitCount ? (
-                                    errors.calibrationValidTill ? (
-                                        <div className="text-danger mt-1">{errors.calibrationValidTill}</div>
+                                        ''
+                                    )}
+                                </div>
+                                <div className={submitCount ? (errors.model ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="model">Model </label>
+                                    <Field name="model" type="text" id="model" placeholder="Enter State Name" className="form-input" />
+                                    {submitCount ? errors.model ? <div className="text-danger mt-1">{errors.model}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.srNo ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="srNo">Sr No </label>
+                                    <Field name="srNo" type="text" id="srNo" placeholder="Enter State Name" className="form-input" />
+                                    {submitCount ? errors.srNo ? <div className="text-danger mt-1">{errors.srNo}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.calibrationCertificateNo ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="calibrationCertificateNo">Calibration Certificate Number</label>
+                                    <Field name="calibrationCertificateNo" type="text" id="calibrationCertificateNo" placeholder="Enter State Name" className="form-input" />
+                                    {submitCount ? (
+                                        errors.calibrationCertificateNo ? (
+                                            <div className="text-danger mt-1">{errors.calibrationCertificateNo}</div>
+                                        ) : (
+                                            <div className="text-success mt-1">Looks Good!</div>
+                                        )
                                     ) : (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    )
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                            <div className={submitCount ? (errors.range ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="range">Range</label>
-                                <Field name="range" type="text" id="range" placeholder="Enter Range" className="form-input" />
-                                {submitCount ? errors.range ? <div className="text-danger mt-1">{errors.range}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
-                            </div>
-                            <div className={submitCount ? (errors.toolID ? 'has-error' : 'has-success') : ''}>
-                                <label htmlFor="toolID">Tool ID</label>
-                                <Field name="toolID" type="text" id="toolID" className="form-input" placeholder="Enter Tool ID" />
-                                {submitCount ? errors.toolID ? <div className="text-danger mt-1">{errors.toolID}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                        ''
+                                    )}
+                                </div>
+                                <div className={submitCount ? (errors.calibrationValidTill ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="calibrationValidTill">Calibration Valid Till</label>
+                                    <Field name="calibrationValidTill" type="date" id="calibrationValidTill" className="form-input" />
+                                    {submitCount ? (
+                                        errors.calibrationValidTill ? (
+                                            <div className="text-danger mt-1">{errors.calibrationValidTill}</div>
+                                        ) : (
+                                            <div className="text-success mt-1">Looks Good!</div>
+                                        )
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                <div className={submitCount ? (errors.range ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="range">Range</label>
+                                    <Field name="range" type="text" id="range" placeholder="Enter Range" className="form-input" />
+                                    {submitCount ? errors.range ? <div className="text-danger mt-1">{errors.range}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
+                                <div className={submitCount ? (errors.toolID ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="toolID">Tool ID</label>
+                                    <Field name="toolID" type="text" id="toolID" className="form-input" placeholder="Enter Tool ID" />
+                                    {submitCount ? errors.toolID ? <div className="text-danger mt-1">{errors.toolID}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
+                                </div>
                             </div>
                         </div>
-                        <button
-                            type="submit"
-                            className="btn btn-primary !mt-6"
-                            onClick={() => {
-                                if (touched.name && !errors.name) {
-                                    submitForm();
-                                }
-                            }}
-                        >
-                            Submit Form
-                        </button>
+                        <div className="w-[98%] mb-6 flex justify-end">
+                            <button
+                                type="submit"
+                                className="btn btn-success mt-4"
+                                onClick={() => {
+                                    if (touched.name && !errors.name) {
+                                        submitForm();
+                                    }
+                                }}
+                            >
+                                Submit Form
+                            </button>
+                        </div>
                     </Form>
                 )}
             </Formik>

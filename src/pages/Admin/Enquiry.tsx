@@ -1,63 +1,42 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
-import { useDispatch, useSelector } from 'react-redux';
-// import { IRootState } from '../../../store';
+import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconEdit from '../../components/Icon/IconEdit';
-import { enquiriesData } from '../../data';
 import IconEye from '../../components/Icon/IconEye';
 import IconCopy from '../../components/Icon/IconCopy';
+import { enquiriesData } from '../../data';
 
 const Enquiry = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('State'));
-    }, []);
+        dispatch(setPageTitle('Enquiry'));
+    }, [dispatch]);
 
-    const [items, setItems] = useState(enquiriesData);
-
-    const deleteRow = (id: any = null) => {
-        if (window.confirm('Are you sure want to delete selected row ?')) {
-            if (id) {
-                setRecords(items.filter((user) => user.id !== id));
-                setInitialRecords(items.filter((user) => user.id !== id));
-                setItems(items.filter((user) => user.id !== id));
-                setSearch('');
-                setSelectedRecords([]);
-            } else {
-                let selectedRows = selectedRecords || [];
-                const ids = selectedRows.map((d: any) => {
-                    return d.id;
-                });
-                const result = items.filter((d) => !ids.includes(d.id as never));
-                setRecords(result);
-                setInitialRecords(result);
-                setItems(result);
-                setSearch('');
-                setSelectedRecords([]);
-                setPage(1);
-            }
-        }
-    };
-
+    const [items, setItems] = useState(
+        enquiriesData.map((item, index) => ({
+            ...item,
+            enquiryID: `ENQ${String(index + 1).padStart(3, '0')}`, // Generates C001, C002, etc.
+        }))
+    );
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    const [initialRecords, setInitialRecords] = useState(sortBy(items, 'name'));
+    const [initialRecords, setInitialRecords] = useState(sortBy(items, 'Hospitalname'));
     const [records, setRecords] = useState(initialRecords);
     const [selectedRecords, setSelectedRecords] = useState<any>([]);
-
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'firstName',
+        columnAccessor: 'Hospitalname',
         direction: 'asc',
     });
-
     const [copied, setCopied] = useState(false);
+
     const handleCopy = async () => {
         try {
             const link = `${window.location.origin}/enquiry_form`;
@@ -69,9 +48,38 @@ const Enquiry = () => {
         }
     };
 
+    const deleteRow = (id: number | null = null) => {
+        if (window.confirm('Are you sure want to delete selected row?')) {
+            if (id) {
+                const filteredItems = items.filter((item) => item.id !== id);
+                setItems(filteredItems);
+                setInitialRecords(filteredItems);
+                setRecords(filteredItems.slice(0, pageSize));
+                setSearch('');
+                setSelectedRecords([]);
+            } else {
+                const ids = selectedRecords.map((d: any) => d.id);
+                const filteredItems = items.filter((d) => !ids.includes(d.id));
+                setItems(filteredItems);
+                setInitialRecords(filteredItems);
+                setRecords(filteredItems.slice(0, pageSize));
+                setSearch('');
+                setSelectedRecords([]);
+                setPage(1);
+            }
+        }
+    };
+
+    // Function to update status
+    const updateQuotation = (id: number, newStatus: 'create' | 'created' | 'approved') => {
+        const updatedItems = items.map((item) => (item.id === id ? { ...item, status: newStatus } : item));
+        setItems(updatedItems);
+        setInitialRecords(sortBy(updatedItems, sortStatus.columnAccessor));
+        navigate('/admin/quotation/add');
+    };
+
     useEffect(() => {
         setPage(1);
-        /* eslint-disable react-hooks/exhaustive-deps */
     }, [pageSize]);
 
     useEffect(() => {
@@ -83,16 +91,28 @@ const Enquiry = () => {
     useEffect(() => {
         setInitialRecords(() => {
             return items.filter((item) => {
-                return item.Hospitalname.toLowerCase().includes(search.toLowerCase());
+                return (
+                    item.enquiryID.toLowerCase().includes(search.toLowerCase()) ||
+                    item.hName.toLowerCase().includes(search.toLowerCase()) ||
+                    item.fullAddress.toLowerCase().includes(search.toLowerCase()) ||
+                    item.city.toLowerCase().includes(search.toLowerCase()) ||
+                    item.state.toLowerCase().includes(search.toLowerCase()) ||
+                    item.pincode.toLowerCase().includes(search.toLowerCase()) ||
+                    item.contactperson.toLowerCase().includes(search.toLowerCase()) ||
+                    item.email.toLowerCase().includes(search.toLowerCase()) ||
+                    item.phone.toLowerCase().includes(search.toLowerCase()) ||
+                    item.designation.toLowerCase().includes(search.toLowerCase()) ||
+                    item.quotation.toLowerCase().includes(search.toLowerCase())
+                );
             });
         });
     }, [search]);
 
     useEffect(() => {
-        const data2 = sortBy(initialRecords, sortStatus.columnAccessor);
-        setRecords(sortStatus.direction === 'desc' ? data2.reverse() : data2);
+        const data = sortBy(initialRecords, sortStatus.columnAccessor);
+        setRecords(sortStatus.direction === 'desc' ? data.reverse() : data);
         setPage(1);
-    }, [sortStatus]);
+    }, [sortStatus, initialRecords]);
 
     return (
         <>
@@ -111,10 +131,6 @@ const Enquiry = () => {
                 <div className="invoice-table">
                     <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                         <div className="flex items-center gap-2">
-                            {/* <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
-                                <IconTrashLines />
-                                Delete
-                            </button> */}
                             <Link to="/admin/enquiry/add" className="btn btn-primary gap-2">
                                 <IconPlus />
                                 Add New
@@ -135,48 +151,70 @@ const Enquiry = () => {
                             records={records}
                             columns={[
                                 {
-                                    accessor: 'Hospitalname',
+                                    accessor: 'enquiryID',
+                                    title: 'ENQ ID',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'hName',
                                     title: 'Hospital Name',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Fulladdress',
+                                    accessor: 'fullAddress',
                                     title: 'Full Address',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'City',
+                                    accessor: 'city',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'State',
+                                    accessor: 'state',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Pincode',
+                                    accessor: 'pincode',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Contactperson',
+                                    accessor: 'contactperson',
                                     title: 'Contact Person',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Email',
+                                    accessor: 'email',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Phone',
+                                    accessor: 'phone',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'Designation',
+                                    accessor: 'designation',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'status',
+                                    accessor: 'quotation',
+                                    title: 'Quotation',
                                     sortable: true,
-                                    render: ({ status }) => <span className={`text-${status.color}`}>{status.tooltip}</span>,
+                                    render: ({ id, quotation }) => {
+                                        if (quotation === 'approved') {
+                                            return <span className="text-success font-semibold">Approved</span>;
+                                        }
+                                        if (quotation === 'created') {
+                                            return (
+                                                <button className="btn btn-primary btn-sm opacity-50 cursor-not-allowed" disabled>
+                                                    Created
+                                                </button>
+                                            );
+                                        }
+                                        return (
+                                            <button className="btn btn-primary btn-sm" onClick={() => updateQuotation(id, 'created')}>
+                                                Create
+                                            </button>
+                                        );
+                                    },
                                 },
                                 {
                                     accessor: 'action',
@@ -185,13 +223,13 @@ const Enquiry = () => {
                                     textAlignment: 'center',
                                     render: ({ id }) => (
                                         <div className="flex gap-4 items-center w-max mx-auto">
-                                            <NavLink to="#" className="flex hover:text-primary">
+                                            <NavLink to="/admin/quotation/view" className="flex hover:text-primary">
                                                 <IconEye />
                                             </NavLink>
                                             <NavLink to="/admin/enquiry/edit" className="flex hover:text-info">
                                                 <IconEdit className="w-4.5 h-4.5" />
                                             </NavLink>
-                                            <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
+                                            <button type="button" className="flex hover:text-danger" onClick={() => deleteRow(id)}>
                                                 <IconTrashLines />
                                             </button>
                                         </div>
@@ -209,7 +247,7 @@ const Enquiry = () => {
                             onSortStatusChange={setSortStatus}
                             selectedRecords={selectedRecords}
                             onSelectedRecordsChange={setSelectedRecords}
-                            paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
+                            paginationText={({ from, to, totalRecords }) => `Showing ${from} to ${to} of ${totalRecords} entries`}
                         />
                     </div>
                 </div>

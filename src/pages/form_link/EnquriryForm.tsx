@@ -1,11 +1,10 @@
 import React from 'react';
 import * as Yup from 'yup';
 import { FieldArray, Field, Form, Formik, ErrorMessage, FieldProps } from 'formik';
-import { Link } from 'react-router-dom';
+import { showMessage } from '../../components/common/ShowMessage';
 import Select from 'react-select';
-import { showMessage } from '../../common/ShowMessage';
+import logo from '../../assets/logo/logo.png';
 
-// Define interfaces
 interface OptionType {
     value: string;
     label: string;
@@ -14,28 +13,6 @@ interface OptionType {
 interface MultiSelectFieldProps {
     name: string;
     options: OptionType[];
-}
-
-interface Service {
-    machineType: string;
-    quantity: number;
-    workType: string[];
-}
-
-interface FormValues {
-    hospitalName: string;
-    fullAddress: string;
-    city: string;
-    state: string;
-    pinCode: string;
-    contactPerson: string;
-    emailAddress: string;
-    contactNumber: string;
-    designation: string;
-    urgency: string;
-    services: Service[];
-    additionalServices: Record<string, string | undefined>;
-    enquiryID?: string; // Optional for generating ENQ ID
 }
 
 // Custom component for multi-select field
@@ -49,19 +26,39 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({ name, options }) =>
                     className="basic-multi-select"
                     classNamePrefix="select"
                     value={options.filter((option) => field.value?.includes(option.value))}
-                    onChange={(selectedOptions) => form.setFieldValue(name, selectedOptions ? selectedOptions.map((option: OptionType) => option.value) : [])}
+                    onChange={(selectedOptions) => {
+                        form.setFieldValue(name, selectedOptions ? selectedOptions.map((option: OptionType) => option.value) : []);
+                    }}
                     onBlur={() => form.setFieldTouched(name, true)}
                 />
-                <div className="h-4">
-                    <ErrorMessage name={name} component="div" className="text-red-500 text-sm" />
-                </div>
+                <ErrorMessage name={name} component="div" className="text-red-500 text-sm" />
             </div>
         )}
     </Field>
 );
 
-// Constants
-const serviceOptions: string[] = [
+type Service = {
+    machineType: string;
+    quantity: number;
+    workType: string[];
+};
+
+type FormValues = {
+    hospitalName: string;
+    fullAddress: string;
+    city: string;
+    state: string;
+    pinCode: string;
+    contactPerson: string;
+    emailAddress: string;
+    contactNumber: string;
+    designation: string;
+    urgency: string;
+    services: Service[];
+    additionalServices: Record<string, string | undefined>;
+};
+
+const serviceOptions = [
     'INSTITUTE REGISTRATION',
     'RSO REGISTRATION, NOMINATION & APPROVAL',
     'DECOMMISSIONING, PRE OWNED PROCUREMENT, QA & LICENSE',
@@ -75,7 +72,7 @@ const serviceOptions: string[] = [
     'OTHERS',
 ];
 
-const machineOptions: OptionType[] = [
+const machineOptions = [
     'Fixed X-Ray',
     'Mobile X-Ray',
     'C-Arm',
@@ -98,17 +95,16 @@ const machineOptions: OptionType[] = [
     'Others',
 ].map((label) => ({ label, value: label }));
 
-const urgencyOptions: string[] = ['Immediantely (within 1-2 days)', 'Urgent (Within a week)', 'Soon (Within 2-3 weeks)', 'Not urgent (just exploring)'];
+const urgencyOptions = ['Immediantely (within 1-2 days)', 'Urgent (Within a week)', 'Soon (Within 2-3 weeks)', 'Not urgent (just exploring)'];
 
-const workTypeOptions: OptionType[] = [
+const workTypeOptions = [
     { value: 'Quality Assurance Test', label: 'Quality Assurance Test' },
     { value: 'Service', label: 'Service' },
     { value: 'Decommissioning', label: 'Decommissioning' },
     { value: 'Decommissioning and Recommissioning', label: 'Decommissioning and Recommissioning' },
 ];
 
-const AddEnquiry: React.FC = () => {
-    // Yup validation schema
+const AddEnquiry = () => {
     const SubmittedForm = Yup.object().shape({
         hospitalName: Yup.string().required('Please fill the Field'),
         fullAddress: Yup.string().required('Please fill the Field'),
@@ -131,45 +127,29 @@ const AddEnquiry: React.FC = () => {
                 })
             )
             .min(1, 'At least one service is required'),
-        additionalServices: Yup.object().shape(
-            serviceOptions.reduce((schema, service) => {
-                return { ...schema, [service]: Yup.string().nullable() };
-            }, {})
-        ),
-        enquiryID: Yup.string().nullable(),
+        additionalServices: Yup.object().shape({
+            'INSTITUTE REGISTRATION': Yup.string(),
+            'RSO REGISTRATION, NOMINATION & APPROVAL': Yup.string(),
+            'DECOMMISSIONING, PRE OWNED PROCUREMENT, QA & LICENSE': Yup.string(),
+            PROCUREMENT: Yup.string(),
+            'TLD BADGE': Yup.string(),
+            'LEAD SHEET': Yup.string(),
+            'LEAD GLASS': Yup.string(),
+            'LEAD APRON': Yup.string(),
+            'THYROID SHIELD': Yup.string(),
+            'GONAD SHIELD': Yup.string(),
+            OTHERS: Yup.string(),
+        }),
     });
 
-    // Form submission handler
     const submitForm = (values: FormValues) => {
-        // Generate enquiryID (e.g., ENQ001) - replace with actual logic to fetch existing enquiries
-        const enquiryCount = 1; // Placeholder: Replace with actual count from enquiriesData or API
-        const newEnquiryID = `ENQ${String(enquiryCount).padStart(3, '0')}`;
-        const submissionValues = { ...values, enquiryID: newEnquiryID };
-
-        console.log('Form submitted with values:', submissionValues);
+        console.log('Form submitted with values:', values);
         showMessage('Form submitted successfully', 'success');
-        // TODO: Save submissionValues to enquiriesData or API
     };
 
     return (
-        <>
-            <ol className="flex text-gray-500 font-semibold dark:text-white-dark mb-4">
-                <li>
-                    <Link to="/" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
-                        Dashboard
-                    </Link>
-                </li>
-                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
-                    <Link to="/admin/enquiry" className="text-primary">
-                        Enquiry
-                    </Link>
-                </li>
-                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
-                    <Link to="#" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
-                        Add Enquiry
-                    </Link>
-                </li>
-            </ol>
+        <div className="fixed w-[100vw] h-[100vh] left-0 top-0 z-50 sm:px-20 sm:py-4 overflow-y-scroll bg-white">
+            <img src={logo} alt="" className="h-14 mt-4 mb-8" />
 
             <h5 className="font-semibold text-lg mb-4">Enquiry Form</h5>
 
@@ -195,84 +175,58 @@ const AddEnquiry: React.FC = () => {
                 validationSchema={SubmittedForm}
                 onSubmit={submitForm}
             >
-                {({ errors, submitCount, values, setFieldValue }) => (
+                {({ errors, submitCount, touched, values, setFieldValue }) => (
                     <Form className="space-y-5">
-                        {/* Basic Details */}
                         <div className="panel">
                             <h5 className="font-semibold text-lg mb-4">Basic Details</h5>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4">
-                                <div className={submitCount && errors.hospitalName ? 'has-error' : submitCount ? 'has-success' : ''}>
-                                    <label htmlFor="hospitalName">Hospital Name</label>
+                                <div className={submitCount ? (errors.hospitalName ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="hospitalName">Hospital Name </label>
                                     <Field name="hospitalName" type="text" id="hospitalName" placeholder="Enter Hospital Name" className="form-input" />
-                                    {submitCount && errors.hospitalName ? (
-                                        <div className="text-danger mt-1">{errors.hospitalName}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.hospitalName ? <div className="text-danger mt-1">{errors.hospitalName}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.fullAddress ? 'has-error' : submitCount ? 'has-success' : ''}>
-                                    <label htmlFor="fullAddress">Full Address</label>
+                                <div className={submitCount ? (errors.fullAddress ? 'has-error' : 'has-success') : ''}>
+                                    <label htmlFor="fullAddress">Full Address </label>
                                     <Field name="fullAddress" type="text" id="fullAddress" placeholder="Enter Full Address" className="form-input" />
-                                    {submitCount && errors.fullAddress ? (
-                                        <div className="text-danger mt-1">{errors.fullAddress}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.fullAddress ? <div className="text-danger mt-1">{errors.fullAddress}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.city ? 'has-error' : submitCount ? 'has-success' : ''}>
+                                <div className={submitCount ? (errors.city ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="city">City</label>
                                     <Field name="city" type="text" id="city" placeholder="Enter City Name" className="form-input" />
-                                    {submitCount && errors.city ? <div className="text-danger mt-1">{errors.city}</div> : submitCount ? <div className="text-success mt-1">Looks Good!</div> : null}
+                                    {submitCount ? errors.city ? <div className="text-danger mt-1">{errors.city}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.state ? 'has-error' : submitCount ? 'has-success' : ''}>
+                                <div className={submitCount ? (errors.state ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="state">State</label>
                                     <Field name="state" type="text" id="state" placeholder="Enter State Name" className="form-input" />
-                                    {submitCount && errors.state ? <div className="text-danger mt-1">{errors.state}</div> : submitCount ? <div className="text-success mt-1">Looks Good!</div> : null}
+                                    {submitCount ? errors.state ? <div className="text-danger mt-1">{errors.state}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.pinCode ? 'has-error' : submitCount ? 'has-success' : ''}>
+                                <div className={submitCount ? (errors.pinCode ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="pinCode">PIN Code</label>
                                     <Field name="pinCode" type="text" id="pinCode" placeholder="Enter PIN Code" className="form-input" />
-                                    {submitCount && errors.pinCode ? (
-                                        <div className="text-danger mt-1">{errors.pinCode}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.pinCode ? <div className="text-danger mt-1">{errors.pinCode}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.contactPerson ? 'has-error' : submitCount ? 'has-success' : ''}>
+                                <div className={submitCount ? (errors.contactPerson ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="contactPerson">Contact Person Name</label>
                                     <Field name="contactPerson" type="text" id="contactPerson" placeholder="Enter Contact Person Name" className="form-input" />
-                                    {submitCount && errors.contactPerson ? (
-                                        <div className="text-danger mt-1">{errors.contactPerson}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.contactPerson ? <div className="text-danger mt-1">{errors.contactPerson}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.emailAddress ? 'has-error' : submitCount ? 'has-success' : ''}>
+
+                                <div className={submitCount ? (errors.emailAddress ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="emailAddress">Email Address</label>
                                     <Field name="emailAddress" type="text" id="emailAddress" placeholder="Enter Email Address" className="form-input" />
-                                    {submitCount && errors.emailAddress ? (
-                                        <div className="text-danger mt-1">{errors.emailAddress}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.emailAddress ? <div className="text-danger mt-1">{errors.emailAddress}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.contactNumber ? 'has-error' : submitCount ? 'has-success' : ''}>
+
+                                <div className={submitCount ? (errors.contactNumber ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="contactNumber">Contact Number</label>
                                     <Field name="contactNumber" type="text" id="contactNumber" placeholder="Enter Contact Number" className="form-input" />
-                                    {submitCount && errors.contactNumber ? (
-                                        <div className="text-danger mt-1">{errors.contactNumber}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.contactNumber ? <div className="text-danger mt-1">{errors.contactNumber}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
-                                <div className={submitCount && errors.designation ? 'has-error' : submitCount ? 'has-success' : ''}>
+
+                                <div className={submitCount ? (errors.designation ? 'has-error' : 'has-success') : ''}>
                                     <label htmlFor="designation">Designation</label>
                                     <Field name="designation" type="text" id="designation" placeholder="Enter Designation" className="form-input" />
-                                    {submitCount && errors.designation ? (
-                                        <div className="text-danger mt-1">{errors.designation}</div>
-                                    ) : submitCount ? (
-                                        <div className="text-success mt-1">Looks Good!</div>
-                                    ) : null}
+                                    {submitCount ? errors.designation ? <div className="text-danger mt-1">{errors.designation}</div> : <div className="text-success mt-1">Looks Good!</div> : ''}
                                 </div>
                             </div>
                         </div>
@@ -288,26 +242,37 @@ const AddEnquiry: React.FC = () => {
                                                 {/* Machine Type */}
                                                 <div className="md:col-span-4">
                                                     <label className="text-sm font-semibold text-gray-700">Machine Type</label>
-                                                    <Field as="select" name={`services.${index}.machineType`} className="form-select w-full">
-                                                        <option value="">Select Machine Type</option>
-                                                        {machineOptions.map((option) => (
-                                                            <option key={option.value} value={option.value}>
-                                                                {option.label}
-                                                            </option>
-                                                        ))}
+                                                    <Field as="select" name={`services.${index}.machineType`} className="form-select w-full border-gray-300 rounded-md text-gray-700">
+                                                        <option value="">Select machine type</option>
+                                                        <option>Fixed X-Ray</option>
+                                                        <option>Mobile X-Ray</option>
+                                                        <option>C-Arm</option>
+                                                        <option>Cath Lab/Interventional Radiology</option>
+                                                        <option>Mammography</option>
+                                                        <option>CT Scan</option>
+                                                        <option>PET CT</option>
+                                                        <option>CT Simulator</option>
+                                                        <option>OPG</option>
+                                                        <option>CBCT</option>
+                                                        <option>BMD/DEXA</option>
+                                                        <option>Dental IOPA</option>
+                                                        <option>Dental Hand Held</option>
+                                                        <option>O Arm</option>
+                                                        <option>KV Imaging (OBI)</option>
+                                                        <option>Lead Apron Test</option>
+                                                        <option>Thyroid Shield Test</option>
+                                                        <option>Gonad Shield Test</option>
+                                                        <option>Radiation Survey of Radiation Facility</option>
+                                                        <option>Others</option>
                                                     </Field>
-                                                    <div className="h-4">
-                                                        <ErrorMessage name={`services.${index}.machineType`} component="div" className="text-red-500 text-sm" />
-                                                    </div>
+                                                    <ErrorMessage name={`services.${index}.machineType`} component="div" className="text-red-500 text-sm" />
                                                 </div>
 
                                                 {/* Quantity */}
                                                 <div className="md:col-span-2">
                                                     <label className="text-sm font-semibold text-gray-700">Quantity</label>
                                                     <Field type="number" name={`services.${index}.quantity`} placeholder="Quantity" className="form-input w-full" />
-                                                    <div className="h-4">
-                                                        <ErrorMessage name={`services.${index}.quantity`} component="div" className="text-red-500 text-sm" />
-                                                    </div>
+                                                    <ErrorMessage name={`services.${index}.quantity`} component="div" className="text-red-500 text-sm" />
                                                 </div>
 
                                                 {/* Work Type */}
@@ -319,7 +284,7 @@ const AddEnquiry: React.FC = () => {
                                                 {/* Remove Button */}
                                                 {values.services.length > 1 && (
                                                     <div className="md:col-span-1 flex justify-end">
-                                                        <button type="button" onClick={() => remove(index)} className="mb-4 text-red-500 text-xs">
+                                                        <button type="button" onClick={() => remove(index)} className="text-red-500 text-xs">
                                                             Remove
                                                         </button>
                                                     </div>
@@ -377,7 +342,7 @@ const AddEnquiry: React.FC = () => {
                                     </label>
                                 ))}
                             </div>
-                            {submitCount && errors.urgency ? <p className="text-red-500 text-sm mt-1">{errors.urgency}</p> : <></>}
+                            {/* {submitCount && errors.urgency && <p className="text-red-500 text-sm mt-1">{errors.urgency}</p>} */}
                         </div>
 
                         {/* Submit Button */}
@@ -389,7 +354,7 @@ const AddEnquiry: React.FC = () => {
                     </Form>
                 )}
             </Formik>
-        </>
+        </div>
     );
 };
 

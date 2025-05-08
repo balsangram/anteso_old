@@ -10,6 +10,7 @@ import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';
 // import IconEye from '../../../components/Icon/IconEye';
 import { dealersAndManufacturers } from '../../../data';
+import IconEye from '../../../components/Icon/IconEye';
 
 const DealersAndManufacturers = () => {
     const dispatch = useDispatch();
@@ -17,7 +18,12 @@ const DealersAndManufacturers = () => {
         dispatch(setPageTitle('DealersAndManufacturers'));
     }, []);
 
-    const [items, setItems] = useState(dealersAndManufacturers);
+    const [items, setItems] = useState(
+        dealersAndManufacturers.map((item, index) => ({
+            ...item,
+            dealersAndManufacturersID: `EMP${String(index + 1).padStart(3, '0')}`, // Generates C001, C002, etc.
+        }))
+    );
 
     const deleteRow = (id: any = null) => {
         if (window.confirm('Are you sure want to delete selected row ?')) {
@@ -71,10 +77,15 @@ const DealersAndManufacturers = () => {
         setInitialRecords(() => {
             return items.filter((item) => {
                 return (
-                    item.customerName.toLowerCase().includes(search.toLowerCase()) ||
-                    item.city.toLowerCase().includes(search.toLowerCase()) ||
-                    item.type.toLowerCase().includes(search.toLowerCase()) ||
-                    item.machineAndPrice.map((machine) => machine.toLowerCase()).includes(search.toLowerCase())
+                    item.dealersAndManufacturersID.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
+                    item.hospitalName.toLowerCase().includes(search.toLowerCase()) ||
+                    item.address.toLowerCase().includes(search.toLowerCase()) ||
+                    item.contactPersonName.toLowerCase().includes(search.toLowerCase()) ||
+                    item.phone.toLowerCase().includes(search.toLowerCase()) ||
+                    item.email.toLowerCase().includes(search.toLowerCase()) ||
+                    item.procurementNumber.toLowerCase().includes(search.toLowerCase()) ||
+                    item.partyCode.toLowerCase().includes(search.toLowerCase()) ||
+                    item.branch.toLowerCase().includes(search.toLowerCase())
                 );
             });
         });
@@ -88,24 +99,24 @@ const DealersAndManufacturers = () => {
 
     return (
         <>
-            <ul className="flex space-x-2 rtl:space-x-reverse">
+            <ol className="flex text-gray-500 font-semibold dark:text-white-dark pb-4">
                 <li>
-                    <Link to="/" className="text-primary hover:underline">
+                    <Link to="/" className="hover:text-gray-500/70 dark:hover:text-white-dark/70">
                         Dashboard
                     </Link>
                 </li>
-                <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                    <span>DealersAndManufacturers</span>
+                <li className="before:w-1 before:h-1 before:rounded-full before:bg-primary before:inline-block before:relative before:-top-0.5 before:mx-4">
+                    <button className="text-primary">DealersAndManufacturers</button>
                 </li>
-            </ul>
+            </ol>
             <div className="panel px-0 border-white-light dark:border-[#1b2e4b]">
                 <div className="invoice-table">
                     <div className="mb-4.5 px-5 flex md:items-center md:flex-row flex-col gap-5">
                         <div className="flex items-center gap-2">
-                            <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
+                            {/* <button type="button" className="btn btn-danger gap-2" onClick={() => deleteRow()}>
                                 <IconTrashLines />
                                 Delete
-                            </button>
+                            </button> */}
                             <Link to="/admin/dealer-and-manufacture/add" className="btn btn-primary gap-2">
                                 <IconPlus />
                                 Add New
@@ -122,19 +133,44 @@ const DealersAndManufacturers = () => {
                             records={records}
                             columns={[
                                 {
-                                    accessor: 'customerName',
+                                    accessor: 'dealersAndManufacturersID',
+                                    title: 'DAM ID',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'city',
+                                    accessor: 'hospitalName',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'type',
+                                    accessor: 'address',
                                     sortable: true,
                                 },
                                 {
-                                    accessor: 'machineAndPrice',
+                                    accessor: 'contactPersonName',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'phone',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'email',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'procurementNumber',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'procurementExpiryDate',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'partyCode',
+                                    sortable: true,
+                                },
+                                {
+                                    accessor: 'branch',
                                     sortable: true,
                                 },
                                 {
@@ -144,12 +180,12 @@ const DealersAndManufacturers = () => {
                                     textAlignment: 'center',
                                     render: ({ id }) => (
                                         <div className="flex gap-4 items-center w-max mx-auto">
+                                            <NavLink to="/apps/invoice/preview" className="flex hover:text-primary">
+                                                <IconEye />
+                                            </NavLink>
                                             <NavLink to="/admin/dealer-and-manufacture/edit" className="flex hover:text-info">
                                                 <IconEdit className="w-4.5 h-4.5" />
                                             </NavLink>
-                                            {/* <NavLink to="/apps/invoice/preview" className="flex hover:text-primary">
-                                                <IconEye />
-                                            </NavLink> */}
                                             <button type="button" className="flex hover:text-danger" onClick={(e) => deleteRow(id)}>
                                                 <IconTrashLines />
                                             </button>
